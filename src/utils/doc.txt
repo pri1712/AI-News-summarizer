@@ -1,0 +1,5 @@
+Documentation:
+
+1. Get the articles in xml format from all the rss feeds and store all of them in all_articles matrix. *
+2. Get articles in json format from newsapi. *
+3. Store these in a postgresql database for ordered collection.
