@@ -1,12 +1,16 @@
 from datetime import datetime
+
 import feedparser
 import requests
-import os
+
+from summarizer import description_summarizer
 
 
 def get_news_from_rss(url):
     articles = []
     feed = feedparser.parse(url)
+
+    """Error handling while parsing the feed."""
     if feed.bozo:
         print("Error in obtaining feed")
         return []
@@ -19,24 +23,26 @@ def get_news_from_rss(url):
             except TypeError as e:
                 print(f"Error parsing date: {e}")
                 published_at = None
+        if entry.get("description") is not None and entry.get("summary") is not None:
+            articles.append({
+                "title": entry.title,
+                "summary": entry.get("summary", ""),
+                "url": entry.link,
+                "source": feed.feed.title,
+                "published_at": published_at,
+                "description": entry.get("description")
+            })
 
-        articles.append({
-            "title": entry.title,
-            "summary": entry.get("summary", ""),
-            "url": entry.link,
-            "source": feed.feed.title,
-            "published_at": published_at
-        })
-    print(articles)
-
-    # Log articles to file in a readable format
+    # Logging.
     with open("output.txt", "a") as file:
         for article in articles:
             file.write(f"Title: {article['title']}\n")
-            file.write(f"Summary: {article['summary']}\n")
             file.write(f"URL: {article['url']}\n")
             file.write(f"Source: {article['source']}\n")
-            file.write(f"Published at: {article['published_at']}\n\n")
+            file.write(f"Published at: {article['published_at']}\n")
+            summarized_article = description_summarizer(article['description'], True)
+            file.write(f"Summary: {summarized_article}\n")
+            file.write(f"Description:{article['description']}\n\n")
     return articles
 
 
@@ -77,16 +83,13 @@ def main():
         articles_from_feed = get_news_from_rss(rss_feed)
         all_articles.extend(articles_from_feed)
 
-
-    newsapi_key = os.getenv("NEWSAPI_KEY")
-    if newsapi_key:
-        newsapi_url = "https://newsapi.org/v2/top-headlines"
-        articles_from_api = get_news_from_api(newsapi_url, newsapi_key)
-        all_articles.extend(articles_from_api)
-    else:
-        print("No NEWSAPI_KEY found in environment variables")
-
-
+    # newsapi_key = os.getenv("NEWSAPI_KEY")
+    # if newsapi_key:
+    #     newsapi_url = "https://newsapi.org/v2/top-headlines"
+    #     articles_from_api = get_news_from_api(newsapi_url, newsapi_key)
+    #     all_articles.extend(articles_from_api)
+    # else:
+    #     print("No NEWSAPI_KEY found in environment variables")
 
 
 if __name__ == '__main__':
