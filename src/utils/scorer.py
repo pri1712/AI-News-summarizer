@@ -15,3 +15,4 @@ def compute_rouge_scores(ground_truth_summary, generated_summary):
         "Rouge-2": scores['rouge2'].fmeasure,
         "Rouge-L": scores['rougeL'].fmeasure
     }
+

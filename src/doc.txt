@@ -4,6 +4,7 @@ Documentation:
 2. Get articles in json format from newsapi. *
 3. Summarize each article using BART , then score that and the given summary using BERT. Try to keep similarity scores >=0.8.
     Use the AI generated Summary in the postgre DB.
+    a. The summaries and descriptions from all the RSS feeds are the same, need to get the actual description to summarize.
     a. the summaries dont really seem all that great especially for news which are short in length i guess??
         or those which have recurring content. I need to find a way to improve the generated summaries.
 4. Try and generate/get category tags for each article.
